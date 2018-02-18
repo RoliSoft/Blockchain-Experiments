@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<title>Lateral Passport on Ethereum</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/ladda.min.css" />
+
+		<style>
+			.ladda-button {
+				background-color: #007bff !important;
+				border-color: #007bff !important;
+			}
+			.ladda-button:hover {
+				background-color: #0069d9 !important;
+				border-color: #0062cc !important;
+			}
+			.ladda-button[disabled] {
+				background-color: #999 !important;
+				border-color: #999 !important;
+			}
+			#points-table td:nth-child(3n) {
+				width: 1%;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="app" class="container">
+			<div class="py-5 text-center">
+				<h1>Lateral Passport on ETH/ERC20</h1>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive-sm">
+						<table id="points-table" class="table table-striped table-bordered">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Points</th>
+									<th>Address</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="row in orderedRows">
+									<td>{{ row.name }}</td>
+									<td>{{ row.points }}</td>
+									<td>{{ row.address }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<h3 class="py-3">Issue points</h3>
+					<div v-show="contractOwner != null && contractOwner == injectedAccount">
+						<form id="issue-form" class="form-inline">
+							<div class="form-group mb-2">
+								<input type="text" class="form-control" v-model="form.name" placeholder="Participant name" required>
+							</div>
+							<div class="form-group mx-sm-3 mb-2">
+								<input type="number" class="form-control" v-model.number="form.points" placeholder="Quantity" required>
+							</div>
+							<div class="form-group mb-2">
+								<input type="text" class="form-control" v-model="form.address" placeholder="Address (optional)">
+							</div>
+							<button type="submit" class="btn btn-primary mb-2 ladda-button mx-sm-3" id="issue-btn" data-style="expand-right" data-color="blue" data-size="s" v-on:click.prevent="issuePoints"><span class="ladda-label">Issue points</span></button>
+						</form>
+					</div>
+					<div v-show="contractOwner != injectedAccount">
+						You are not the owner of the smart contract.
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@0.19.0/dist/web3.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/spin.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/ladda.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Ladda/1.0.6/ladda.jquery.min.js"></script>
+		<script>
+
+			if (typeof web3 !== 'undefined') {
+				web3 = new Web3(web3.currentProvider);
+			} else {
+				web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/")); // or http://localhost:8545
+			}
+
+			var pointsContract = web3.eth
+				.contract([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"string"},{"name":"_quantity","type":"uint256"},{"name":"_address","type":"address"}],"name":"issuePoints","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getParticipantAt","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getParticipantCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"quantity","type":"uint256"},{"indexed":false,"name":"total","type":"uint256"},{"indexed":false,"name":"target","type":"address"}],"name":"Issued","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}])
+				.at('0xfdab51bc9ef3e8cf8cdf95962c3cc0d8bfc03e5a');
+
+			var app = new Vue({
+				el: '#app',
+				data: {
+					form: {
+						name: null,
+						points: null,
+						address: null
+					},
+					rows: { },
+					contractOwner: null,
+					injectedAccount: null,
+					lastTransactionId: null
+				},
+				computed: {
+					orderedRows: function () {
+						return _.orderBy(this.rows, 'points', 'desc');
+					}
+				},
+				mounted: function () {
+
+					pointsContract.getOwner(function(error, result) {
+						app.contractOwner = result;
+						app.pollInjectedAccount();
+					});
+
+					pointsContract.getParticipantCount(function(error, result) {
+						for (var i = 0; i < result; i++) {
+							pointsContract.getParticipantAt(i, function(error, result) {
+								app.updateParticipant(result[0], result[1], result[2]);
+							});
+						}
+					});
+
+					Ladda.bind('#issue-btn');
+					pointsContract.Issued().watch(function(error, result) {
+						console.log('Issued: ' + result.transactionHash, result.args);
+
+						if (result.transactionHash == undefined || result.transactionHash == app.lastTransactionId) {
+							Ladda.stopAll();
+						}
+
+						app.updateParticipant(result.args.name, result.args.total, result.args.target);
+					});
+
+				},
+				methods: {
+
+					issuePoints: function() {
+						if (!$(this.$el).find('#issue-form')[0].reportValidity()) {
+							return;
+						}
+
+						pointsContract.issuePoints(
+							this.form.name, this.form.points, this.form.address,
+							function(error, result) {
+								console.log('Issuing: ' + result);
+								app.lastTransactionId = result;
+							}
+						);
+					},
+
+					updateParticipant: function(name, points, address) {
+						this.$set(this.rows, name, { name: name, points: points * 1, address: web3.toChecksumAddress(address) });
+					},
+
+					pollInjectedAccount: function() {
+						this.injectedAccount = web3.eth.accounts[0];
+					}
+
+				}
+			});
+
+			setInterval(function() {
+				app.pollInjectedAccount();
+			}, 1000);
+		</script>
+	</body>
+</html>
