@@ -29,7 +29,8 @@ contract LateralPassportPointsERC20 is ERC20Basic {
 
     address constant EMPTY_ADDRESS = address(0);
 
-    event Issued(string name, uint quantity, uint total, address target);
+    event Issue(string name, int quantity, uint total, address target);
+    event Purchase(string name, uint total);
     event Transfer(address indexed from, address indexed to, uint value);
 
     function LateralPassportPointsERC20() public {
@@ -46,14 +47,25 @@ contract LateralPassportPointsERC20 is ERC20Basic {
     }
 
     function transfer(address to, uint value) public {
+        if (to == address(this)) {
+            points[users[msg.sender]] -= value;
+            Transfer(msg.sender, to, value);
+            Issue(users[msg.sender], int(value) * -1, points[users[msg.sender]], msg.sender);
+            Purchase(users[msg.sender], value);
+            return;
+        }
+
         if (addresses[users[to]] == EMPTY_ADDRESS) {
-            revert();
+            return;
         }
 
         points[users[msg.sender]] -= value;
         points[users[to]] += value;
+
         Transfer(msg.sender, to, value);
-        Issued(users[to], value, points[users[to]], to);
+
+        Issue(users[msg.sender], int(value) * -1, points[users[msg.sender]], msg.sender);
+        Issue(users[to], int(value), points[users[to]], to);
     }
 
     function getParticipantCount() view public returns (uint) {
@@ -65,15 +77,25 @@ contract LateralPassportPointsERC20 is ERC20Basic {
         return (participant, points[participant], addresses[participant]);
     }
 
+    function lookupAddress(address who) public view returns (string, uint) {
+        return (users[who], points[users[who]]);
+    }
+
     function issuePoints(string _name, uint _quantity, address _address) onlyOwner public {
         _ensureParticipant(_name, _address);
+
         points[_name] += _quantity;
+
         Transfer(owner, addresses[_name], _quantity);
-        Issued(_name, _quantity, points[_name], addresses[_name]);
+        Issue(_name, int(_quantity), points[_name], addresses[_name]);
     }
 
     function getOwner() view public returns (address) {
         return owner;
+    }
+
+    function getContract() view public returns (address) {
+        return address(this);
     }
 
     function _ensureParticipant(string _name, address _address) private {

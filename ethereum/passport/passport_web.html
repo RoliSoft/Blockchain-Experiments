@@ -86,7 +86,7 @@
 			}
 
 			var pointsContract = web3.eth
-				.contract([{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getParticipantAt","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"string"},{"name":"_quantity","type":"uint256"}],"name":"issuePoints","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getParticipantCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"quantity","type":"uint256"},{"indexed":false,"name":"total","type":"uint256"}],"name":"Issued","type":"event"}])
+				.contract([{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getParticipantAt","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"string"},{"name":"_quantity","type":"uint256"}],"name":"issuePoints","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getParticipantCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"quantity","type":"uint256"},{"indexed":false,"name":"total","type":"uint256"}],"name":"Issue","type":"event"}])
 				.at('0xdaf133d21872534acb3e8b96fab4cae05f42f81d');
 
 			var app = new Vue({
@@ -122,7 +122,7 @@
 					});
 
 					Ladda.bind('#issue-btn');
-					pointsContract.Issued().watch(function(error, result) {
+					pointsContract.Issue().watch(function(error, result) {
 						console.log('Issued: ' + result.transactionHash, result.args);
 
 						if (result.transactionHash == undefined || result.transactionHash == app.lastTransactionId) {

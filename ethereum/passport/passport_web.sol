@@ -6,7 +6,7 @@ contract LateralPassportPoints {
     string[] participants;
     mapping (string => uint) points;
 
-    event Issued(string name, uint quantity, uint total);
+    event Issue(string name, uint quantity, uint total);
 
     function LateralPassportPoints() public {
         owner = msg.sender;
@@ -29,7 +29,7 @@ contract LateralPassportPoints {
     function issuePoints(string _name, uint _quantity) onlyOwner public {
         _ensureParticipant(_name);
         points[_name] += _quantity;
-        Issued(_name, _quantity, points[_name]);
+        Issue(_name, _quantity, points[_name]);
     }
 
     function getOwner() view public returns (address) {

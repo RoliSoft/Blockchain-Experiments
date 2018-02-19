@@ -25,6 +25,18 @@
 			#points-table td:nth-child(3n) {
 				width: 1%;
 			}
+			#points-table tr {
+				transition: background-color 150ms ease-out;
+			}
+			.increase {
+				background-color: var(--green) !important;
+			}
+			.decrease {
+				background-color: var(--red) !important;
+			}
+			.address {
+				letter-spacing: -0.4px;
+			}
 		</style>
 	</head>
 	<body>
@@ -46,7 +58,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="row in orderedRows">
+								<tr v-for="row in orderedRows" v-bind:class="row.class">
 									<td>{{ row.name }}</td>
 									<td>{{ row.points }}</td>
 									<td>{{ row.address }}</td>
@@ -58,6 +70,7 @@
 				<div class="col-md-12">
 					<h3 class="py-3">Issue points</h3>
 					<div v-show="contractOwner != null && contractOwner == injectedAccount">
+						<p>Logged in as <span class="address">{{ injectedAccount }}</span>, {{ ethBalance }} ETH left.</p>
 						<form id="issue-form" class="form-inline">
 							<div class="form-group mb-2">
 								<input type="text" class="form-control" v-model="form.name" placeholder="Participant name" required>
@@ -94,8 +107,8 @@
 			}
 
 			var pointsContract = web3.eth
-				.contract([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"string"},{"name":"_quantity","type":"uint256"},{"name":"_address","type":"address"}],"name":"issuePoints","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getParticipantAt","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getParticipantCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"quantity","type":"uint256"},{"indexed":false,"name":"total","type":"uint256"},{"indexed":false,"name":"target","type":"address"}],"name":"Issued","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}])
-				.at('0xfdab51bc9ef3e8cf8cdf95962c3cc0d8bfc03e5a');
+				.contract([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"string"},{"name":"_quantity","type":"uint256"},{"name":"_address","type":"address"}],"name":"issuePoints","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getParticipantAt","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"},{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getContract","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getParticipantCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"lookupAddress","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"quantity","type":"int256"},{"indexed":false,"name":"total","type":"uint256"},{"indexed":false,"name":"target","type":"address"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"name","type":"string"},{"indexed":false,"name":"total","type":"uint256"}],"name":"Purchase","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}])
+				.at('0xd4d1a0f44dad5fc25ba80a777329ff168e2bb07c');
 
 			var app = new Vue({
 				el: '#app',
@@ -108,7 +121,9 @@
 					rows: { },
 					contractOwner: null,
 					injectedAccount: null,
-					lastTransactionId: null
+					ethBalance: 'unknown',
+					lastTransactionId: null,
+					animateChanges: false
 				},
 				computed: {
 					orderedRows: function () {
@@ -118,7 +133,7 @@
 				mounted: function () {
 
 					pointsContract.getOwner(function(error, result) {
-						app.contractOwner = result;
+						app.contractOwner = web3.toChecksumAddress(result);
 						app.pollInjectedAccount();
 					});
 
@@ -131,7 +146,7 @@
 					});
 
 					Ladda.bind('#issue-btn');
-					pointsContract.Issued().watch(function(error, result) {
+					pointsContract.Issue().watch(function(error, result) {
 						console.log('Issued: ' + result.transactionHash, result.args);
 
 						if (result.transactionHash == undefined || result.transactionHash == app.lastTransactionId) {
@@ -140,6 +155,10 @@
 
 						app.updateParticipant(result.args.name, result.args.total, result.args.target);
 					});
+
+					setTimeout(function() {
+						app.animateChanges = true;
+					}, 2000);
 
 				},
 				methods: {
@@ -159,11 +178,37 @@
 					},
 
 					updateParticipant: function(name, points, address) {
-						this.$set(this.rows, name, { name: name, points: points * 1, address: web3.toChecksumAddress(address) });
+						var changeClass = '';
+
+						if (this.animateChanges) {
+							if (name in this.rows) {
+								changeClass = this.rows[name].points < points ? 'increase' : (this.rows[name].points > points ? 'decrease' : '');
+							} else {
+								changeClass = 'increase';
+							}
+						} else {
+							changeClass = '';
+						}
+
+						this.$set(this.rows, name, {
+							name: name,
+							points: points * 1,
+							address: web3.toChecksumAddress(address),
+							class: changeClass
+						});
+
+						if (this.animateChanges) {
+							setTimeout(function() {
+								app.rows[name].class = '';
+							}, 300);
+						}
 					},
 
 					pollInjectedAccount: function() {
-						this.injectedAccount = web3.eth.accounts[0];
+						this.injectedAccount = web3.toChecksumAddress(web3.eth.accounts[0]);
+						web3.eth.getBalance(this.injectedAccount, function(error, result) {
+							app.ethBalance = web3.fromWei(result).toFixed(3);
+						});
 					}
 
 				}
