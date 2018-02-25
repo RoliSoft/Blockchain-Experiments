@@ -179,9 +179,7 @@
 
 					this.pollInjectedAccount();
 
-					pointsContract.getContract(function(error, result) {
-						app.contractAddress = web3.toChecksumAddress(result);
-					});
+					app.contractAddress = web3.toChecksumAddress(pointsContract.address);
 
 					pointsContract.Issue().watch(function(error, result) {
 						if (result == undefined || result.transactionHash == undefined || app.user == null || result.args.name != app.user.name) {

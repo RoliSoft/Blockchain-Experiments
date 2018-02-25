@@ -14,9 +14,9 @@ contract ERC20Basic {
 
 }
 
-contract LateralPassportPointsERC20 is ERC20Basic {
+contract PassportPointsWebERC20 is ERC20Basic {
 
-    string public name = "Lateral Passport Points";
+    string public name = "Passport Points";
     string public symbol = "LPP";
     uint public decimals = 0;
     uint public totalSupply = 1000000000;
@@ -33,7 +33,7 @@ contract LateralPassportPointsERC20 is ERC20Basic {
     event Purchase(string name, uint total);
     event Transfer(address indexed from, address indexed to, uint value);
 
-    function LateralPassportPointsERC20() public {
+    function PassportPointsWebERC20() public {
         owner = msg.sender;
     }
 
@@ -47,17 +47,20 @@ contract LateralPassportPointsERC20 is ERC20Basic {
     }
 
     function transfer(address to, uint value) public {
+        require(to == address(this) || addresses[users[to]] != EMPTY_ADDRESS);
+		require(points[users[msg.sender]] >= value);
+
         if (to == address(this)) {
             points[users[msg.sender]] -= value;
+
             Transfer(msg.sender, to, value);
             Issue(users[msg.sender], int(value) * -1, points[users[msg.sender]], msg.sender);
             Purchase(users[msg.sender], value);
+
             return;
         }
 
-        if (addresses[users[to]] == EMPTY_ADDRESS) {
-            return;
-        }
+		require(points[users[to]] + value >= points[users[to]]);
 
         points[users[msg.sender]] -= value;
         points[users[to]] += value;
@@ -82,8 +85,9 @@ contract LateralPassportPointsERC20 is ERC20Basic {
     }
 
     function issuePoints(string _name, uint _quantity, address _address) onlyOwner public {
-        _ensureParticipant(_name, _address);
+		require(points[_name] + _quantity >= points[_name]);
 
+        _ensureParticipant(_name, _address);
         points[_name] += _quantity;
 
         Transfer(owner, addresses[_name], _quantity);
@@ -92,10 +96,6 @@ contract LateralPassportPointsERC20 is ERC20Basic {
 
     function getOwner() view public returns (address) {
         return owner;
-    }
-
-    function getContract() view public returns (address) {
-        return address(this);
     }
 
     function _ensureParticipant(string _name, address _address) private {
