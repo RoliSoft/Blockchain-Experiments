@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-
-using Neo.Emulator;
-using Neo.Emulator.API;
 
 namespace SmartContractUnitTest
 {
@@ -10,17 +6,7 @@ namespace SmartContractUnitTest
     {
         static void Main(string[] args)
         {
-            var bytecodes = File.ReadAllBytes(@"..\..\..\PassportPoints\bin\PassportPoints.avm");
-            var blockchain = new Blockchain();
-            var emulator = new NeoEmulator(blockchain)
-                {
-                    checkWitnessMode = CheckWitnessMode.AlwaysTrue
-                };
-            
-            var address = blockchain.DeployContract(nameof(bytecodes), bytecodes);
-            emulator.SetExecutingAddress(address);
-
-            dynamic contract = new SmartContractEmulator(emulator);
+            dynamic contract = new SmartContractEmulator(@"..\..\..\PassportPoints\bin\PassportPoints.avm");
 
             contract.IssuePoints("Roland", 25);
             contract.IssuePoints("Roland", 20);

@@ -1,19 +1,35 @@
 ﻿using System.Dynamic;
+using System.IO;
 using System.Numerics;
 
 using LunarParser;
 
 using Neo.Emulator;
+using Neo.Emulator.API;
 
 namespace SmartContractUnitTest
 {
-    class SmartContractEmulator : DynamicObject
+    public class SmartContractEmulator : DynamicObject
     {
-        private readonly NeoEmulator _emulator;
+        public Blockchain Blockchain { get; }
+        public NeoEmulator Emulator { get; }
+        public Address ContractAddress { get; }
 
-        public SmartContractEmulator(NeoEmulator emulator)
+        public SmartContractEmulator(string filename) : this(File.ReadAllBytes(filename))
         {
-            _emulator = emulator;
+
+        }
+
+        public SmartContractEmulator(byte[] bytecodes)
+        {
+            Blockchain = new Blockchain();
+            Emulator = new NeoEmulator(Blockchain)
+                {
+                    checkWitnessMode = CheckWitnessMode.AlwaysTrue
+                };
+
+            ContractAddress = Blockchain.DeployContract(string.Empty, bytecodes);
+            Emulator.SetExecutingAddress(ContractAddress);
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
@@ -22,7 +38,7 @@ namespace SmartContractUnitTest
 
             try
             {
-                result = _emulator.GetOutput();
+                result = Emulator.GetOutput();
             }
             catch
             {
@@ -53,8 +69,8 @@ namespace SmartContractUnitTest
             inputs.AddValue(operation);
             inputs.AddNode(argumentInputs);
 
-            _emulator.Reset(inputs);
-            _emulator.Run();
+            Emulator.Reset(inputs);
+            Emulator.Run();
         }
     }
 }
