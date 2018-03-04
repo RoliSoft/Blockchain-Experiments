@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LunarParser, Version=1.0.28.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LunarParser.1.0.29\lib\net45\LunarParser.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.Hosting, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Hosting.2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Hosting.dll</HintPath>
     </Reference>
@@ -145,11 +148,14 @@
     <Reference Include="Microsoft.Net.Http.Headers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.Headers.2.0.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
     </Reference>
-    <Reference Include="Neo, Version=2.7.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Neo.2.7.1\lib\netstandard2.0\Neo.dll</HintPath>
+    <Reference Include="Neo, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Neo.2.6.0\lib\netstandard2.0\Neo.dll</HintPath>
     </Reference>
-    <Reference Include="Neo.VM, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Neo.VM.2.1.0\lib\net461\Neo.VM.dll</HintPath>
+    <Reference Include="NEO-Emulator, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Neo.Emulator.0.6.0\lib\net461\NEO-Emulator.dll</HintPath>
+    </Reference>
+    <Reference Include="Neo.VM, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Neo.VM.2.0.4\lib\net461\Neo.VM.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
